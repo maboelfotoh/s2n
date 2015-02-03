@@ -1,0 +1,6 @@
+Savage 2 "s2n" network interception library
+----------------------
+The purpose of this library is to intercept sendto/recvfrom socket calls
+	for the purpose of analysis and event based interaction.
+
+Usage: LD_PRELOAD=./s2n.so ./dedicated_server.sh

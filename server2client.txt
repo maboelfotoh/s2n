@@ -1,0 +1,80 @@
+Server -> Client cmd IDs
+
+When sending server information:
+>>Cmd 0x08
+>>Cmd 0x02
+
+When a client connects:
+>>Cmd 0x50
+>>Request info Cmd 0x01
+
+  State strings to client:
+  >>cmd 0x52
+  >>cmd 0x54
+  ...
+  >>cmd 0x55
+  ...
+  >>cmd 0x57
+  State string update:
+  >>cmd 0x55
+  >>cmd 0x57
+  Finished sending state strings
+  >>cmd 0x02
+  >>cmd 0x5A
+
+
+Client ready to enter the game:
+>>cmd 0x03
+>>cmd 0x61
+>>cmd 0x66
+>>cmd 0x60
+
+Player connected/request unit Player_Observer/spawn new client/Voice client
+>>cmd 0x5D
+>>cmd 0x5E
+...
+>>cmd 0x5B
+...
+  Many 5B as responses to client snapshot^
+
+Client request change to Team 1 / request unit Player_Observer
+>>cmd 0x04
+>>cmd 0x60
+
+Client request unit Player_Marksman
+>>cmd 0x05
+Client request unit Player_Savage
+>>cmd 0x06
+...
+cmd id increments - actually sequence ids?
+these are just empty ACKnowledgements
+[MAGIC DWORD] [05] [client id WORD] [ack'd sequence id DWORD]
+
+When spawning a spawn portal:
+
+Sent cmd 0x60
+3E 00 00 00 03 1C 16 60 40   >......`@
+-----
+Sent cmd 0x60
+9A DE 97 F1 01 1C 16 60 55 09 FB 03   .......`U...
+-----
+
+When spawning an electric eye:
+
+Sent cmd 0x60
+9A DE 97 F1 01 1C 16 60 55 04 F6 03   .......`U...
+-----
+again:
+
+Sent cmd 0x60
+9A DE 97 F1 01 1C 16 60 55 04 F6 03   .......`U...
+-----
+
+
+When spawning a spawn portal again:
+Sent cmd 0x60 REL?
+3F 00 00 00 03 1C 16 60 40   ?......`@
+-----
+Sent cmd 0x60 DEF
+9A DE 97 F1 01 1C 16 60 55 09 FB 03   .......`U...
+-----

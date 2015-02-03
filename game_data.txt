@@ -1,0 +1,273 @@
+GAMEDATA commands
+
+   Description                   ID     Parameters
+----------------------------------------------------------------------
+  Request Unit                  0x01    [Unit Id WORD]
+  Request Team                  0x02    [Team Id WORD]
+  Chat ALL                      0x03    [Message \0 terminated string]
+  Chat TEAM                     0x04    [Message \0 terminated string]
+  Chat SQUAD                    0x05    [Message \0 terminated string]
+  Spend point                   0x07    [Skill Id DWORD]
+  Place building                0x08    [LOTS of crap]
+  Order repair building         0x0A    [some crap, probably building id and something else]
+  Request Spawn                 0x0B    [nothing]
+  Request Purchase              0x0D    [Item Id WORD]
+  Request take command          0x14    [nothing]
+
+  Spawn at a place ?            0x16    [building id DWORD ??]
+   nvm: not just spawn at,
+   also sent when placing
+   building using builder menu
+
+  Request persistant item       0x18    [Vault slot DWORD]
+  Draw on minimap               0x1C    [Lots of crap]
+  Commander resign              0x20    [nothing]
+  Officer clear orders          0x25    [unknown 4 bytes]
+  Officer rally squad           0x26    [unknown 5 bytes]
+  VC command                    0x36    [Team Id BYTE] [voice team string] [VC Id DWORD]
+  Exit building menu            0x37    [nothing]
+    or: unselect building
+
+  Request donate                0x3D    [Gold amount WORD]
+  Select building (to build)    0x4B    [Building Id WORD]
+   commanders & builders
+
+----------------------------------------------------------------------
+
+>GAMEDATA PACKET : Select Team 1
+-----
+C8 02 01 00   ....
+-----
+>GAMEDATA PACKET Client #0 requested change to: Player_Engineer
+-----
+C8 01 C1 02   ....
+-----
+
+>GAMEDATA PACKET Client #0 requested change to: Player_Marksman
+-----
+C8 01 C4 02   ....
+-----
+
+>GAMEDATA PACKET Client #0 requested change to: Player_Savage
+-----
+C8 01 C9 02   ....
+-----
+
+>GAMEDATA PACKET Client #0 requested change to: Player_Legionnaire
+-----
+C8 01 C2 02   ....
+-----
+
+>GAMEDATA PACKET Client #0 requested change to: Player_Chaplain
+-----
+C8 01 BE 02   ....
+-----
+
+>GAMEDATA PACKET Client #0 requested change to: Player_BatteringRam
+-----
+C8 01 BC 02   ....
+-----
+
+>GAMEDATA PACKET Client #0 requested change to: Player_Steambuchet
+-----
+C8 01 CC 02   ....
+-----
+
+>GAMEDATA PACKET Press spawn button / Request spawn ?
+-----
+C8 0B   ..
+-----
+
+GAMEDATA PACKET Spawn at stronghold on mirchul
+-----
+C8 16 D2 01 00 00   ......
+-----
+
+GAMEDATA PACKET Spawn at lair on mirchul
+-----
+C8 16 D1 01 00 00   ......
+-----
+
+GAMEDATA PACKET Spawn at west HS on mirchul
+-----
+C8 16 D6 00 00 00   ......
+-----
+GAMEDATA PACKET Spawn at east HS on mirchul
+-----
+C8 16 15 00 00 00   ......
+-----
+
+>GAMEDATA PACKET Select goldmine in human builder build menu
+-----
+C8 4B 75 00   .Ku.
+-----
+GAMEDATA PACKET Exit builder build menu
+-----
+C8 37   .7
+-----
+
+GAMEDATA PACKET [ALL] Zipped: Hello, World!
+-----
+C8 03 48 65 6C 6C 6F 2C 20 57 6F 72 6C 64 21 00   ..Hello, World!.
+-----
+
+>GAMEDATA PACKET [TEAM 1] Zipped: Hello, Team!
+-----
+C8 04 48 65 6C 6C 6F 2C 20 54 65 61 6D 21 00   ..Hello, Team!.
+-----
+
+>GAMEDATA PACKET [SQUAD] Zipped: Hello, Squad!
+-----
+C8 05 48 65 6C 6C 6F 2C 20 53 71 75 61 64 21 00   ..Hello, Squad!.
+-----
+
+>GAMEDATA PACKET [VC ALL] Zipped: Hello. (v74)
+-----
+#  VC GD ID   TEAM   ?????????????????   VOICE CMD ID
+C8    36       03    68 75 6D 61 6E 00   78 00 00 00   .6.human.x...
+-----
+>GAMEDATA PACKET [VC ALL] Zipped: Good game. (v76)
+-----
+C8 36 03 68 75 6D 61 6E 00 7A 00 00 00   .6.human.z...
+-----
+>GAMEDATA PACKET [VC ALL] Zipped: Goodbye. (v75)
+-----
+C8 36 03 68 75 6D 61 6E 00 79 00 00 00   .6.human.y...
+-----
+
+GAMEDATA PACKET [VC TEAM 1] Zipped: Yes. (v51)
+-----
+C8 36 00 68 75 6D 61 6E 00 51 00 00 00   .6.human.Q...
+-----
+GAMEDATA PACKET [VC TEAM 1] Zipped: No. (v52)
+-----
+C8 36 00 68 75 6D 61 6E 00 52 00 00 00   .6.human.R...
+-----
+
+>GAMEDATA PACKET Client #0 requested purchase of: Consumable_HealthReplenish
+-----
+C8 0D CD 00   ....
+-----
+>GAMEDATA PACKET Client #0 requested purchase of: Consumable_HealthMinor
+-----
+C8 0D CC 00   ....
+-----
+>GAMEDATA PACKET Client #0 requested purchase of: Consumable_HealthMajor
+-----
+C8 0D CB 00   ....
+-----
+>GAMEDATA PACKET Client #0 requested purchase of: Consumable_MalikenHeart
+-----
+C8 0D DC 00   ....
+-----
+>GAMEDATA PACKET Client #0 requested purchase of persistant item, vault slot: 1
+-----
+C8 18 00 00 00 00   ......
+-----
+>GAMEDATA PACKET Client #0 requested purchase of persistant item, vault slot: 2
+-----
+C8 18 01 00 00 00   ......
+-----
+
+>GAMEDATA PACKET Client #0 requested purchase of persistant item, vault slot: 3
+-----
+C8 18 02 00 00 00   ......
+-----
+
+>GAMEDATA PACKET Client #0 requested purchase of persistant item, vault slot: 4
+-----
+C8 18 03 00 00 00   ......
+-----
+
+>GAMEDATA PACKET Client #0 requested purchase of persistant item, vault slot: 5
+-----
+C8 18 04 00 00 00   ......
+-----
+
+GAMEDATA PACKET Human builder place goldmine on stronghold mine (map morning)
+-----
+C8 16 5A 07 00 00   ..Z...
+-----
+GAMEDATA PACKET ???? after exiting build menu when successfully built mine on stronghold mind (morning)
+-----
+C8 08 75 00 BE 61 4C 46 DC 59 0C 46 9C C4 34 C0   ..u..aLF.Y.F..4.
+00 00 00 00 00 00 00 00 4A 98 89 42 7D 05 00 00   ........J..B}...
+-----
+
+>GAMEDATA PACKET Donate 50 gold
+-----
+C8 3D 32 00   .=2.
+-----
+
+>GAMEDATA PACKET Spend point in endurance
+-----
+C8 07 01 00 00 00   ......
+-----
+>GAMEDATA PACKET Spend point in intelligence
+-----
+C8 07 02 00 00 00   ......
+-----
+GAMEDATA PACKET Spend point in agility
+-----
+C8 07 03 00 00 00   ......
+-----
+GAMEDATA PACKET Spend point in strength
+-----
+C8 07 04 00 00 00   ......
+-----
+>GAMEDATA PACKET Take command button
+-----
+C8 14   ..
+-----
+>GAMEDATA PACKET Commander spawn worker
+-----
+C8 48   .H
+-----
+>GAMEDATA PACKET Commander Request move worker
+-----
+C8 09 02 35 20 3F 46 8A 8B 03 46 00 00 00 00 00   ...5 ?F...F.....
+-----
+GAMEDATA PACKET Commander Request move worker
+-----
+C8 09 02 93 29 49 46 88 97 03 46 80 25 61 C1 00   ....)IF...F.%a..
+-----
+GAMEDATA PACKET Commander Request move worker
+-----
+C8 09 02 53 89 37 46 F0 49 01 46 00 C0 AF BE 00   ...S.7F.I.F.....
+-----
+GAMEDATA PACKET Commander Request worker repair building (stronghold @ morning)
+-----
+C8 0A 02 5A 07 00 00 00   ...Z....
+-----
+>GAMEDATA PACKET Commander request worker repair building (stronghold mine @ morning)
+-----
+C8 0A 02 7A 07 00 00 00   ...z....
+-----
+>GAMEDATA PACKET Commander request select building mine (same as builders menu!)
+-----
+C8 4B 75 00   .Ku.
+-----
+>GAMEDATA PACKET Create armory building on morning near stronghold
+-----
+C8 08 65 00 EA 5E 41 46 84 F2 FB 45 00 9F 2E C1   ..e..^AF...E....
+00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF   ................
+-----
+>GAMEDATA PACKET Received when toggling a building's "repairable" checkbox
+            There is no building id, how does this work ????
+-----
+C8 53   .S
+-----
+
+GAMEDATA PACKET Resign from commander
+-----
+C8 20   . 
+-----
+
+>GAMEDATA PACKET Squad Officer "Rally"
+-----
+C8 26 05 A6 07 00 00   .&.....
+-----
+>GAMEDATA PACKET Squad Officer "Clear Orders"
+-----
+C8 25 00 C8 25 00   .%..%.
+-----
