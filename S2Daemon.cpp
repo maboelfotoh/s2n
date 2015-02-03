@@ -64,26 +64,48 @@ size_t S2Daemon::OnSendPacket(uint8_t* buf, size_t len)
 
 size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 {
-    /*
-call next map vote command...
-10 00 00 00
-03
-1e 5f
-c8 5e
-03 00 00 00
+	if(buf[4] == 3 && buf[7] == 0x0c8) {
+		switch(buf[8]) {
+			case 3:
+			//AllChat packet
 
-F3 on a next map vote..
-09 00 00 00
-03
-1e 5f
-c8 5f
-*/
-//printf("Received packet!!!!!!!!\n");
+			//limit game AllChat message length; game server cannot properly handle messages larger than 1250 bytes
+			if(len > 250) {
+				buf[250] = 0;
+				return 251;
+			}
+			break;
+
+			case 4:
+			//TeamChat packet
+
+			case 5:
+			//SquadChat packet
+
+			case 0x5e:
+			//Call vote
+
+			switch(buf[9]) {
+				case 2:
+				//shuffle
+				break;
+				case 3:
+				//next map
+				break;
+			}
+			break;
+			
+		}
+	}
+
+
+/*
     if(len != 13) return len;
     if(buf[4] != 3 || buf[7] != 0x0c8 || buf[8] != 0x5e) return len;
 printf("Received next map vote packet!!!!\n");
     buf[9] = 0;
     return len;
+*/
 /*
     if(len >= 8)
     {
