@@ -39,6 +39,7 @@ S2Daemon::S2Daemon(void)
 {
     Savage::Execute("S2Daemon init: Echo hi!");
     CmdProcessor::init();
+    CnC::init();
 }
 S2Daemon::~S2Daemon(void)
 {
@@ -80,6 +81,7 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 			if(CmdProcessor::disableBuildAccountIdSet.find(accountId) 
 				!= CmdProcessor::disableBuildAccountIdSet.end())
 				CmdProcessor::disableBuildConnIdSet.insert(std::pair<uint32_t, uint32_t>(connId, connId));
+			return len;
 		}
 	}
 	uint32_t connId = *(uint32_t *)&buf[5] & 0x0ffff;

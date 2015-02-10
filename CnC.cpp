@@ -12,7 +12,8 @@
 #include "CmdProcessor.h"
 
 void error(const char *msg) {
-    perror(msg);
+    //perror(msg);
+    printf(msg);
     exit(1);
 }
 
@@ -44,11 +45,13 @@ void* listenTask(void *argument) {
                  (struct sockaddr *) &cli_addr, 
                  &clilen);
          if (newsockfd < 0) 
-             error("ERROR on accept");
+             //error("ERROR on accept");
+             continue;
          //conns.push_back(new Connection(newsockfd));
          bzero(buffer,256);
          n = read(newsockfd,buffer,255);
-         if (n < 0) error("ERROR reading from socket");
+         if (n < 0) //error("ERROR reading from socket");
+             continue;
          //printf("Here is the message: %s\n",buffer);
          CmdProcessor::process(buffer, n);
          n = write(newsockfd, "OK", 2);
