@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include "CmdProcessor.h"
 
-//filter_map CmdProcessor::filters;
+filter_map CmdProcessor::filters;
 std::map<unsigned int, unsigned int> CmdProcessor::userMap;
 std::map<unsigned int, unsigned int> CmdProcessor::disableBuildAccountIdSet;
 std::map<unsigned int, unsigned int> CmdProcessor::disableBuildConnIdSet;
