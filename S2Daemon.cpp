@@ -1,5 +1,7 @@
 #include "S2Daemon.h"
 #include "Savage.h"
+#include "CmdProcessor.h"
+#include "CnC.h"
 
 S2Daemon* g_pDaemon = NULL;
 
@@ -36,6 +38,7 @@ static void dump(uint8_t* buf, size_t len)
 S2Daemon::S2Daemon(void)
 {
     Savage::Execute("S2Daemon init: Echo hi!");
+    CmdProcessor::init();
 }
 S2Daemon::~S2Daemon(void)
 {
@@ -64,6 +67,22 @@ size_t S2Daemon::OnSendPacket(uint8_t* buf, size_t len)
 
 size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 {
+//select build ability (human builder)...
+//0b 00 00 00 03 80 16 c8 4b 75 00
+	if(len < 10) return len;
+
+	if(*(uint32_t *)buf == 0xf197de9a && len > 38) {
+		if(!strncmp((char *)&buf[8], "S2_K2_CONNECT", 13)) {
+			uint32_t connId = *(uint32_t *)&buf[5] & 0x0ffff;
+			uint32_t accountId = *(uint32_t *)&buf[34];
+			if(CmdProcessor::disableBuildConnIdSet.find(connId) != CmdProcessor::disableBuildConnIdSet.end())
+				CmdProcessor::disableBuildConnIdSet.erase(connId);
+			if(CmdProcessor::disableBuildAccountIdSet.find(accountId) 
+				!= CmdProcessor::disableBuildAccountIdSet.end())
+				CmdProcessor::disableBuildConnIdSet.insert(std::pair<uint32_t, uint32_t>(connId, connId));
+		}
+	}
+	uint32_t connId = *(uint32_t *)&buf[5] & 0x0ffff;
 	if(buf[4] == 3 && buf[7] == 0x0c8) {
 		switch(buf[8]) {
 			case 3:
@@ -82,7 +101,15 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 			case 5:
 			//SquadChat packet
 
-			case 0x5e:
+			case 75: //0x4b
+			//Builder build ability selected
+			if(CmdProcessor::disableBuildConnIdSet.find(connId) == CmdProcessor::disableBuildConnIdSet.end())
+				return len;
+			//Connection Id found on blacklist, disable build ability
+			buf[9] = 0;
+			return len;
+
+			case 94: //0x5e
 			//Call vote
 
 			switch(buf[9]) {
