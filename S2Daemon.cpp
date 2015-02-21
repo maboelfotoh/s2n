@@ -2,6 +2,7 @@
 #include "Savage.h"
 #include "CmdProcessor.h"
 #include "CnC.h"
+#include "util.h"
 
 S2Daemon* g_pDaemon = NULL;
 
@@ -81,11 +82,31 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 			if(CmdProcessor::disableBuildAccountIdSet.find(accountId) 
 				!= CmdProcessor::disableBuildAccountIdSet.end())
 				CmdProcessor::disableBuildConnIdSet.insert(std::pair<uint32_t, uint32_t>(connId, connId));
+
+			if(CmdProcessor::userMap.find(connId) != CmdProcessor::userMap.end())
+				CmdProcessor::userMap.erase(connId);
+			CmdProcessor::userMap.insert(std::pair<uint32_t, User>(connId, new User()));
+
 			return len;
 		}
 	}
 	uint32_t connId = *(uint32_t *)&buf[5] & 0x0ffff;
 	if(buf[4] == 3 && buf[7] == 0x0c8) {
+
+		// spam check (All/Team/Squad Chat)
+		if(buf[8] > 2 && buf[8] < 6) {
+			//spam check
+			if(len > 100) {
+				User user = CmdProcessor::userMap.find(connId);
+				if(!user.addChatMsg(buf)) {
+					//duplicate message, kick user
+					Savage::Execute("kick user \"reason\"");
+					return 0;
+				}
+			}
+
+		}
+
 		switch(buf[8]) {
 			case 3:
 			//AllChat packet
