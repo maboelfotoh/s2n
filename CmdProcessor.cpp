@@ -20,7 +20,7 @@ void CmdProcessor::process(char* buf, int len) {
     std::string* args;
     //std::smatch match;
     std::string buffer(buf);
-    printf("CmdProcessor: processing received command\r\n");
+    printf("Sv: CmdProcessor: processing received command\r\n");
     for(filter_iterator iter = filters.begin(); iter != filters.end(); ++iter) {
         // function = iterator->first = key
         // regex = iterator->second = value
@@ -41,19 +41,19 @@ void CmdProcessor::process(char* buf, int len) {
         std::string pattern = iter->first;
         std::string param;
         if(std::string::npos != buffer.find(pattern)) {
-            printf("CmdProcessor: found matching command handler\r\n");
+            printf("Sv: CmdProcessor: found matching command handler\r\n");
             buffer = buffer.substr(0, buffer.find("HTTP/")) + "\0";
             amp = 0;
             do {
                 eqsign = buffer.find("=", amp, 1);
                 amp = buffer.find("&", eqsign + 1, 1);
                 vargs.push_back(buffer.substr(eqsign + 1, amp) + "\0");
-                printf("CmdProcessor: %s\r\n", (buffer.substr(eqsign + 1, amp) + "\0").c_str());
+                printf("Sv: CmdProcessor: %s\r\n", (buffer.substr(eqsign + 1, amp) + "\0").c_str());
             } while(amp ^ std::string::npos);
             args = new std::string[vargs.size()];
             for(i = 0; i < vargs.size(); ++i)
                 args[i] = vargs.at(i);
-            printf("CmdProcessor: calling handler function\r\n");
+            printf("Sv: CmdProcessor: calling handler function\r\n");
             iter->second(vargs.size(), args);
         }
     }

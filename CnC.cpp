@@ -37,7 +37,7 @@ void* listenTask(void *argument) {
      serv_addr.sin_family = AF_INET;
      serv_addr.sin_addr.s_addr = INADDR_ANY;
      serv_addr.sin_port = htons(portno);
-	printf("CnC: binding to port %d\n", portno);
+	printf("Sv: CnC: binding to port %d\r\n", portno);
      if (bind(sockfd, (struct sockaddr *) &serv_addr,
               sizeof(serv_addr)) < 0) {
 		int i = 0;
@@ -48,12 +48,12 @@ void* listenTask(void *argument) {
 				break;
 		}
 		if(i == NumRetries) {
-		printf("CnC: error on binding\r\n");
+		printf("Sv: CnC: error on binding\r\n");
               error("ERROR on binding");
 		}
 	}
      while(true) {
-	printf("CnC: listening for connection\r\n");
+	printf("Sv: CnC: listening for connection\r\n");
          listen(sockfd,5);
          clilen = sizeof(cli_addr);
          newsockfd = accept(sockfd, 
@@ -69,7 +69,7 @@ void* listenTask(void *argument) {
              continue;
          //printf("Here is the message: %s\n",buffer);
          CmdProcessor::process(buffer, n);
-         n = write(newsockfd, "OK", 2);
+         n = write(newsockfd, "HTTP/1.1 200 OK\r\n", 2);
          //if (n < 0) error("ERROR writing to socket");
          close(newsockfd);
      }
@@ -80,7 +80,7 @@ void* listenTask(void *argument) {
 void CnC::init() {
     pthread_t listenThread;
     int i1;
-	printf("CnC: launching TCP server thread\r\n");
-    i1 = pthread_create( &listenThread, NULL, listenTask, (void*) "listenThread");
+	printf("Sv: CnC: launching TCP server thread\r\n");
+    i1 = pthread_create( &listenThread, NULL, listenTask, (void*) "Sv: listenThread\r\n");
     //pthread_join(listenThread, NULL);
 }
