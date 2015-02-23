@@ -107,7 +107,7 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 					//duplicate message, kick user
 					int clientNum = SHostServer::GetClientNumFromAccountID(user->accountID);
 					char str[50] = {0};
-					sprintf(str, "kick %d Kicked for spamming", clientNum);
+					sprintf(str, "kick %d \"Kicked for spamming\"", clientNum);
 					std::string cmd = str;
 					Savage::Execute(cmd);
 					return 0;
