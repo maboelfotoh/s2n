@@ -3,7 +3,9 @@
 class User {
 	// holds hash values of last 3 chat messages sent by user
 	unsigned int lastChatMsgs[3];
-	int msgIndex = 0;
+	int msgIndex;
 public:
-	void addChatMsg(std::string msg);
+	int accountID;
+	User(int accountID);
+	bool addChatMsg(const char * msg, unsigned int len);
 };

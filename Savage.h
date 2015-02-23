@@ -2,7 +2,7 @@
 #define SAVAGE_H
 
 #include "Prerequisites.h"
-#include "CHostServer.h"
+#include "SHostServer.h"
 
 namespace Savage
 {

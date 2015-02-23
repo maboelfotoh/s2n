@@ -3,6 +3,7 @@
 #include "CmdProcessor.h"
 #include "CnC.h"
 #include "util.h"
+#include "string.h"
 
 S2Daemon* g_pDaemon = NULL;
 
@@ -38,8 +39,9 @@ static void dump(uint8_t* buf, size_t len)
 
 S2Daemon::S2Daemon(void)
 {
-    Savage::Execute("S2Daemon init: Echo hi!");
+    Savage::Execute("echo S2Daemon: initializing CmdProcessor");
     CmdProcessor::init();
+    Savage::Execute("echo S2Daemon: initializing CnC");
     CnC::init();
 }
 S2Daemon::~S2Daemon(void)
@@ -85,7 +87,7 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 
 			if(CmdProcessor::userMap.find(connId) != CmdProcessor::userMap.end())
 				CmdProcessor::userMap.erase(connId);
-			CmdProcessor::userMap.insert(std::pair<uint32_t, User>(connId, new User()));
+			CmdProcessor::userMap.insert(std::pair<uint32_t, User*>(connId, new User(accountId)));
 
 			return len;
 		}
@@ -97,10 +99,17 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 		if(buf[8] > 2 && buf[8] < 6) {
 			//spam check
 			if(len > 100) {
-				User user = CmdProcessor::userMap.find(connId);
-				if(!user.addChatMsg(buf)) {
+				std::map<unsigned int, User*>::iterator it = CmdProcessor::userMap.find(connId);
+				User* user = it->second;
+				char chatMsg[150] = {0};
+				strncpy(chatMsg, (const char *)&buf[9], 90);
+				if(!user->addChatMsg(chatMsg, len - 9)) {
 					//duplicate message, kick user
-					Savage::Execute("kick user \"reason\"");
+					int clientNum = SHostServer::GetClientNumFromAccountID(user->accountID);
+					char str[50] = {0};
+					sprintf(str, "kick %d Kicked for spamming", clientNum);
+					std::string cmd = str;
+					Savage::Execute(cmd);
 					return 0;
 				}
 			}

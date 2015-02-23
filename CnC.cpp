@@ -18,11 +18,13 @@ void error(const char *msg) {
 }
 
 void* listenTask(void *argument) {
+	printf("CnC: TCP server thread stared\r\n");
       char* msg;
       msg = (char*)argument;
       std::cout<<msg<<std::endl;
 
      int sockfd, newsockfd, portno = 57531;
+	int NumRetries = 3;
      socklen_t clilen;
      char buffer[256];
      struct sockaddr_in serv_addr, cli_addr;
@@ -35,10 +37,23 @@ void* listenTask(void *argument) {
      serv_addr.sin_family = AF_INET;
      serv_addr.sin_addr.s_addr = INADDR_ANY;
      serv_addr.sin_port = htons(portno);
+	printf("CnC: binding to port %d\n", portno);
      if (bind(sockfd, (struct sockaddr *) &serv_addr,
-              sizeof(serv_addr)) < 0) 
+              sizeof(serv_addr)) < 0) {
+		int i = 0;
+		for(; i < NumRetries; ++i) {
+			++portno;
+			serv_addr.sin_port = htons(portno);
+			if(0 <= bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)))
+				break;
+		}
+		if(i == NumRetries) {
+		printf("CnC: error on binding\r\n");
               error("ERROR on binding");
+		}
+	}
      while(true) {
+	printf("CnC: listening for connection\r\n");
          listen(sockfd,5);
          clilen = sizeof(cli_addr);
          newsockfd = accept(sockfd, 
@@ -65,6 +80,7 @@ void* listenTask(void *argument) {
 void CnC::init() {
     pthread_t listenThread;
     int i1;
+	printf("CnC: launching TCP server thread\r\n");
     i1 = pthread_create( &listenThread, NULL, listenTask, (void*) "listenThread");
     //pthread_join(listenThread, NULL);
 }
