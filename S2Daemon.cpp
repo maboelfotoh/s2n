@@ -3,7 +3,7 @@
 #include "CmdProcessor.h"
 #include "CnC.h"
 #include "util.h"
-#include "string.h"
+#include "Config.h"
 
 S2Daemon* g_pDaemon = NULL;
 
@@ -43,6 +43,13 @@ S2Daemon::S2Daemon(void)
     CmdProcessor::init();
     Savage::Execute("echo S2Daemon: initializing CnC");
     CnC::init();
+    Savage::Execute("echo S2Daemon: reading config");
+    char wd[256];
+    getcwd(wd, 255);
+    std::string cwdMsg = "echo S2Daemon: current working directory is: ";
+    cwdMsg += wd;
+    Savage::Execute(cwdMsg);
+    readConfig();
 }
 S2Daemon::~S2Daemon(void)
 {

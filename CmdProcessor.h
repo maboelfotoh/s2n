@@ -1,3 +1,6 @@
+#ifndef CMDPROCESSOR_H
+#define CMDPROCESSOR_H
+
 #include <map>
 //#include <unordered_set>
 #include <cstdarg>
@@ -24,3 +27,5 @@ public:
 typedef std::map<std::string, handler_method> filter_map;
 typedef std::map<std::string, handler_method>::iterator filter_iterator;
 //typedef filter_map::iterator filter_iterator;
+
+#endif
