@@ -104,23 +104,42 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 
 		// spam check (All/Team/Squad Chat)
 		if(buf[8] > 2 && buf[8] < 6) {
+			std::map<unsigned int, User*>::iterator it = CmdProcessor::userMap.find(connId);
+			User* user = it->second;
+			int accountID = user->accountID;
+			char chatMsg[150] = {0};
+			strncpy(chatMsg, (const char *)&buf[9], 90);
+			std::string strChat(chatMsg);
 			//spam check
 			if(len > 100) {
-				std::map<unsigned int, User*>::iterator it = CmdProcessor::userMap.find(connId);
-				User* user = it->second;
-				char chatMsg[150] = {0};
-				strncpy(chatMsg, (const char *)&buf[9], 90);
 				if(!user->addChatMsg(chatMsg, len - 9)) {
 					//duplicate message, kick user
-					int clientNum = SHostServer::GetClientNumFromAccountID(user->accountID);
+					int clientNum = SHostServer::GetClientNumFromAccountID(accountID);
 					char str[50] = {0};
 					sprintf(str, "kick %d \"Kicked for spamming\"", clientNum);
 					std::string cmd = str;
 					Savage::Execute(cmd);
 					return 0;
 				}
+			} else {
+				if(CmdProcessor::adminSet.find(accountID) != CmdProcessor::adminSet.end()) {
+					// admin user sent chat message - check if it's an admin command
+					if(strChat.length() > 15) {
+						if(!strChat.compare(0, 14, "admin nobuild ")) {
+							std::string userid = strChat.substr(15);
+							if(CmdProcessor::disableBuildAccountIdSet.find(atoi(userid.c_str()))
+								== CmdProcessor::disableBuildAccountIdSet.end()) {
+								CmdProcessor::disableBuildConnIdSet.insert(std::pair<uint32_t, uint32_t>(connId, connId));
+								CmdProcessor::disableBuildAccountIdSet.insert(std::pair<unsigned int, std::string>(accountID, "nickname"));
+								updateConfig();
+								buf[9] = 0;
+								buf[8] = 0; return len;
+								//return 10;
+							}
+						}
+					}
+				}
 			}
-
 		}
 
 		switch(buf[8]) {
@@ -136,16 +155,18 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 
 			case 4:
 			//TeamChat packet
+			break;
 
 			case 5:
 			//SquadChat packet
+			break;
 
 			case 75: //0x4b
 			//Builder build ability selected
 			if(CmdProcessor::disableBuildConnIdSet.find(connId) == CmdProcessor::disableBuildConnIdSet.end())
 				return len;
 			//Connection Id found on blacklist, disable build ability
-			buf[9] = 0;
+			buf[8] = 0;
 			return len;
 
 			case 94: //0x5e

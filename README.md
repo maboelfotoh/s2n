@@ -1,5 +1,11 @@
 # s2n
 
+assumes /tmp/s2hooker contains the following files:
+buildbanlist.txt
+adminlist.txt
+both have the format:
+id nick
+
 call shuffle vote
 S2Daemon 0: 0E 00 00 00 03 E3 A2 C8 5E 02 00 00 00   ........^....
 call next map vote

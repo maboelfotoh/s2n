@@ -10,5 +10,5 @@ void onDisableBuild(int argc, std::string argv[]) {
     unsigned int accountId = atoi(id.c_str());
     printf("CmdHandler: disabling builder build ability for account id %u\r\n", accountId);
     //disableBuildAccountIdSet.insert(accountId);
-    CmdProcessor::disableBuildAccountIdSet.insert(std::pair<unsigned int, unsigned int>(accountId, accountId));
+    CmdProcessor::disableBuildAccountIdSet.insert(std::pair<unsigned int, std::string>(accountId, "nickname"));
 }

@@ -1,1 +1,2 @@
 void readConfig();
+void updateConfig();
