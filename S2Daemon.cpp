@@ -127,9 +127,10 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 					if(strChat.length() > 15) {
 						if(!strChat.compare(0, 14, "admin nobuild ")) {
 							std::string userID = strChat.substr(15);
-							if(CmdProcessor::disableBuildAccountIdSet.find(atoi(userID.c_str()))
+							unsigned int accID = atoi(userID.c_str());
+							if(CmdProcessor::disableBuildAccountIdSet.find(accID)
 								== CmdProcessor::disableBuildAccountIdSet.end()) {
-								CmdProcessor::disableBuildAccountIdSet.insert(std::pair<unsigned int, std::string>(userID, "nickname"));
+								CmdProcessor::disableBuildAccountIdSet.insert(std::pair<unsigned int, std::string>(accID, "nickname"));
 								updateConfig();
 								buf[9] = 0;
 								buf[8] = 0; return len;
