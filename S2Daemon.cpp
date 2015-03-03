@@ -126,11 +126,23 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 					// admin user sent chat message - check if it's an admin command
 					if(strChat.length() > 15) {
 						if(!strChat.compare(0, 14, "admin nobuild ")) {
-							std::string userID = strChat.substr(15);
+							std::string userID = strChat.substr(14);
 							unsigned int accID = atoi(userID.c_str());
 							if(CmdProcessor::disableBuildAccountIdSet.find(accID)
 								== CmdProcessor::disableBuildAccountIdSet.end()) {
 								CmdProcessor::disableBuildAccountIdSet.insert(std::pair<unsigned int, std::string>(accID, "nickname"));
+								updateConfig();
+								buf[9] = 0;
+								buf[8] = 0; return len;
+								//return 10;
+							}
+						}
+						else if(!strChat.compare(0, 12, "admin build ")) {
+							std::string userID = strChat.substr(12);
+							unsigned int accID = atoi(userID.c_str());
+							if(CmdProcessor::disableBuildAccountIdSet.find(accID)
+								!= CmdProcessor::disableBuildAccountIdSet.end()) {
+								CmdProcessor::disableBuildAccountIdSet.erase(accID);
 								updateConfig();
 								buf[9] = 0;
 								buf[8] = 0; return len;
