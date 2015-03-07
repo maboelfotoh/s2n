@@ -15,7 +15,7 @@ class CmdProcessor {
 public:
     static std::map<std::string, handler_method> filters;
     static std::map<unsigned int, User*> userMap;
-
+    static std::map<unsigned int, unsigned int> acc2connMap;
     static std::map<unsigned int, unsigned int> adminSet;
 
     //static std::unordered_set<uint32_t> disableBuildAccountIdSet;

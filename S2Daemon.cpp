@@ -88,6 +88,7 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 			uint32_t accountId = *(uint32_t *)&buf[34];
 			if(CmdProcessor::disableBuildConnIdSet.find(connId) != CmdProcessor::disableBuildConnIdSet.end())
 				CmdProcessor::disableBuildConnIdSet.erase(connId);
+
 			if(CmdProcessor::disableBuildAccountIdSet.find(accountId) 
 				!= CmdProcessor::disableBuildAccountIdSet.end())
 				CmdProcessor::disableBuildConnIdSet.insert(std::pair<uint32_t, uint32_t>(connId, connId));
@@ -95,7 +96,7 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 			if(CmdProcessor::userMap.find(connId) != CmdProcessor::userMap.end())
 				CmdProcessor::userMap.erase(connId);
 			CmdProcessor::userMap.insert(std::pair<uint32_t, User*>(connId, new User(accountId)));
-
+			CmdProcessor::acc2connMap.insert(std::pair<uint32_t, uint32_t>(accountId, connId));
 			return len;
 		}
 	}
@@ -130,6 +131,9 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 							unsigned int accID = atoi(userID.c_str());
 							if(CmdProcessor::disableBuildAccountIdSet.find(accID)
 								== CmdProcessor::disableBuildAccountIdSet.end()) {
+								std::map<uint32_t, uint32_t>::iterator it = CmdProcessor::acc2connMap.find(accID);
+								if(it != CmdProcessor::acc2connMap.end())
+									CmdProcessor::disableBuildConnIdSet.insert(std::pair<unsigned int, unsigned int>(it->second, it->second));
 								CmdProcessor::disableBuildAccountIdSet.insert(std::pair<unsigned int, std::string>(accID, "nickname"));
 								updateConfig();
 								buf[9] = 0;
@@ -142,6 +146,9 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 							unsigned int accID = atoi(userID.c_str());
 							if(CmdProcessor::disableBuildAccountIdSet.find(accID)
 								!= CmdProcessor::disableBuildAccountIdSet.end()) {
+								std::map<uint32_t, uint32_t>::iterator it = CmdProcessor::acc2connMap.find(accID);
+								if(it != CmdProcessor::acc2connMap.end())
+									CmdProcessor::disableBuildConnIdSet.erase(it->second);
 								CmdProcessor::disableBuildAccountIdSet.erase(accID);
 								updateConfig();
 								buf[9] = 0;

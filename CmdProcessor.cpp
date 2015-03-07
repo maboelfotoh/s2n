@@ -5,6 +5,7 @@
 
 filter_map CmdProcessor::filters;
 std::map<unsigned int, User*> CmdProcessor::userMap;
+std::map<unsigned int, unsigned int> CmdProcessor::acc2connMap;
 std::map<unsigned int, unsigned int> CmdProcessor::adminSet;
 std::map<unsigned int, std::string> CmdProcessor::disableBuildAccountIdSet;
 std::map<unsigned int, unsigned int> CmdProcessor::disableBuildConnIdSet;
