@@ -1,3 +1,6 @@
+#include <fstream>
+#include <cstdio>
+#include <ctime>
 #include "S2Daemon.h"
 #include "Savage.h"
 #include "CmdProcessor.h"
@@ -6,6 +9,26 @@
 #include "Config.h"
 
 S2Daemon* g_pDaemon = NULL;
+std::ofstream logfile;
+
+// http://stackoverflow.com/questions/997946/how-to-get-current-time-and-date-in-c
+// Get current date/time, format is YYYY-MM-DD.HH:mm:ss
+const std::string currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+    return buf;
+}
+
+void log(std::string str) {
+	logfile.open("/tmp/s2hooker/s2n.log", std::ios_base::app);
+	logfile << currentDateTime() << ": " << str;
+	logfile.close();
+}
 
 static char* makeBitString(uint8_t value, char* buffer)
 {
@@ -181,11 +204,20 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 			break;
 
 			case 75: //0x4b
-			//Builder build ability selected
-			if(CmdProcessor::disableBuildConnIdSet.find(connId) == CmdProcessor::disableBuildConnIdSet.end())
-				return len;
-			//Connection Id found on blacklist, disable build ability
-			buf[8] = 0;
+			//build ability selected
+			if(CmdProcessor::disableBuildConnIdSet.find(connId) != CmdProcessor::disableBuildConnIdSet.end()) {
+				//Connection Id found on blacklist, disable build ability
+				buf[8] = 0;
+				std::map<uint32_t, User*>::iterator it = CmdProcessor::userMap.find(connId);
+				if(it != CmdProcessor::userMap.end()) {
+					char str[250];
+					sprintf(str, "Banned build request from banned player with account id = %d\n", it->second->accountID);
+					log(str);
+				} else {
+					// shouldn't happen
+					log("Build ban connection ID exists in ban list but doesn't have a user entry!\n");
+				}
+			}
 			return len;
 
 			case 94: //0x5e
