@@ -78,9 +78,11 @@ void* listenTask(void *argument) {
 }
 
 void CnC::init() {
+/*
     pthread_t listenThread;
     int i1;
 	printf("Sv: CnC: launching TCP server thread\r\n");
     i1 = pthread_create( &listenThread, NULL, listenTask, (void*) "Sv: listenThread\r\n");
     //pthread_join(listenThread, NULL);
+*/
 }
