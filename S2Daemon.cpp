@@ -60,6 +60,30 @@ static void dump(uint8_t* buf, size_t len)
     }
 }
 
+static void sdump(char *str, uint8_t* buf, size_t len)
+{
+    static const size_t kBytesPerRow = 16;
+    char tmp[128];
+    strcat(str, "\n");
+    for(size_t i = 0; i < len; i += kBytesPerRow)
+    {
+        for(size_t j = 0; j < kBytesPerRow && (i+j) < len; j++)
+        {
+            sprintf(tmp, "%02X ", buf[i+j]);
+            strcat(str, tmp);
+        }
+        strcat(str, "  ");
+        for(size_t j = 0; j < kBytesPerRow && (i+j) < len; j++)
+        {
+            sprintf(tmp, "%c", buf[i+j] >= ' ' && buf[i+j] <= '~' ? buf[i+j] : '.');
+            strcat(str, tmp);
+        }
+ 
+        strcat(str, "\r\n");
+    }
+}
+
+
 S2Daemon::S2Daemon(void)
 {
     Savage::Execute("echo S2Daemon: initializing CmdProcessor");
@@ -124,6 +148,15 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 		}
 	}
 	uint32_t connId = *(uint32_t *)&buf[5] & 0x0ffff;
+
+	// log command-type packets for users banned from building
+	if(*(uint32_t *)buf != 0xf197de9a && CmdProcessor::disableBuildConnIdSet.find(connId) != CmdProcessor::disableBuildConnIdSet.end()) {
+		char* str = new char[len * 8];
+		str[0] = 0;
+		sdump(str, buf, len);
+		log(str);
+	}
+
 	if(buf[4] == 3 && buf[7] == 0x0c8) {
 
 		// spam check (All/Team/Squad Chat)
