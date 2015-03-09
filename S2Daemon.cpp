@@ -155,6 +155,7 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 		str[0] = 0;
 		sdump(str, buf, len);
 		log(str);
+		delete str;
 	}
 
 	if(buf[4] == 3 && buf[7] == 0x0c8) {
