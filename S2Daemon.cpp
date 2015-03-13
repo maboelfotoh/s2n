@@ -129,7 +129,7 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 //0b 00 00 00 03 80 16 c8 4b 75 00
 	if(len < 10) return len;
 
-	if(*(uint32_t *)buf == 0xf197de9a && len > 38) {
+	if(*(uint32_t *)buf == 0xf197de9a && len > 32) {
 		if(!strncmp((char *)&buf[8], "S2_K2_CONNECT", 13)) {
 			uint32_t connId = *(uint32_t *)&buf[5] & 0x0ffff;
 			uint32_t accountId = *(uint32_t *)&buf[34];
@@ -144,6 +144,13 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 				CmdProcessor::userMap.erase(connId);
 			CmdProcessor::userMap.insert(std::pair<uint32_t, User*>(connId, new User(accountId)));
 			CmdProcessor::acc2connMap.insert(std::pair<uint32_t, uint32_t>(accountId, connId));
+
+			char* str = new char[len * 8];
+			str[0] = 0;
+			sdump(str, buf, len);
+			log(str);
+			delete str;
+
 			return len;
 		}
 	}
@@ -151,6 +158,7 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 
 	// log command-type packets for users banned from building
 	if(*(uint32_t *)buf != 0xf197de9a && CmdProcessor::disableBuildConnIdSet.find(connId) != CmdProcessor::disableBuildConnIdSet.end()) {
+//	if(*(uint32_t *)buf != 0xf197de9a) {
 		char* str = new char[len * 8];
 		str[0] = 0;
 		sdump(str, buf, len);
@@ -165,6 +173,7 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 			std::map<unsigned int, User*>::iterator it = CmdProcessor::userMap.find(connId);
 			User* user = it->second;
 			int accountID = user->accountID;
+			int clientNum = SHostServer::GetClientNumFromAccountID(accountID);
 			char chatMsg[150] = {0};
 			strncpy(chatMsg, (const char *)&buf[9], 90);
 			std::string strChat(chatMsg);
@@ -172,7 +181,6 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 			if(len > 100) {
 				if(!user->addChatMsg(chatMsg, len - 9)) {
 					//duplicate message, kick user
-					int clientNum = SHostServer::GetClientNumFromAccountID(accountID);
 					char str[50] = {0};
 					sprintf(str, "kick %d \"Kicked for spamming\"", clientNum);
 					std::string cmd = str;
@@ -214,6 +222,16 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 							}
 						}
 					}
+				}
+
+				if(!strChat.compare(0, 10, "spawncrate")) {
+					char str[512] = {0};
+					sprintf(str, "spawnentityatentity #GetIndexFromClientNum(%d)# Npc_Critter definition /npcs/crate/crate.npc", 
+						clientNum);
+					std::string cmd = str;
+					Savage::Execute(cmd);
+					buf[8] = 0; buf[9] = 0;
+					return len;
 				}
 			}
 		}
