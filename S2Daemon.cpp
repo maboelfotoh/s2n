@@ -132,7 +132,9 @@ size_t S2Daemon::OnReceivePacket(uint8_t* buf, size_t len)
 	if(*(uint32_t *)buf == 0xf197de9a && len > 32) {
 		if(!strncmp((char *)&buf[8], "S2_K2_CONNECT", 13)) {
 			uint32_t connId = *(uint32_t *)&buf[5] & 0x0ffff;
-			uint32_t accountId = *(uint32_t *)&buf[34];
+			unsigned int i = 7;
+			while((*(uint32_t *)&buf[i] & 0x0ffff) != connId && i < len - 5) ++i;
+			uint32_t accountId = *(uint32_t *)&buf[i+2];
 			if(CmdProcessor::disableBuildConnIdSet.find(connId) != CmdProcessor::disableBuildConnIdSet.end())
 				CmdProcessor::disableBuildConnIdSet.erase(connId);
 
