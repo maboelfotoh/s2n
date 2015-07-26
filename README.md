@@ -4,7 +4,7 @@ Savage 2: A Tortured Soul (http://www.savage2.com) is a game developed by S2 Gam
 
 This repository contains work done for the unofficial Savage 2 maintenance project. If an individual or company owns the rights to Savage 2: A Tortured Soul and has an issue with this resource being made publicly accessible, they are welcome to message me and request that the resource be removed.
 
-# s2n - cloned from https://github.com/SammyH/s2n
+# s2n: work derived from https://github.com/SammyH/s2n
 
 assumes /tmp/s2hooker contains the following files:
 buildbanlist.txt
